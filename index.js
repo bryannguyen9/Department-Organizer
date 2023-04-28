@@ -1,22 +1,5 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
 
-const db = mysql.createConnection(
-    {
-      host: 'localhost',
-      user: 'root',
-      password: 'password',
-      database: 'company_db'
-    });
-    db.connect((err) => {
-      if (err) {
-        console.error('Error connecting to the database:', err.stack);
-        return;
-      }
-      console.log('Connected to the database.');
-      // start app
-      userMenu();
-    });
 
 // Inquirer prompts for user input
 function userMenu() {
@@ -61,11 +44,13 @@ function userMenu() {
             break;
           case 'Add an employee':
             addEmployee()
-              .then(() => console.log('Employee added.'));
+              .then(() => console.log('Employee added.'))
+              .then(() => userMenu());
             break;
           case 'Update an employee role':
             updateEmployeeRole()
-              .then(() => console.log('Employee role updated.'));
+              .then(() => console.log('Employee role updated.'))
+              .then(() => userMenu());
             break;
           case 'Exit': // Exit the loop and terminate the app
             console.log('Goodbye!');
@@ -73,12 +58,11 @@ function userMenu() {
             break;
           default:
             console.log('Invalid option.');
+            userMenu();
             break;
         }
       });
-  }
-    
-
+    }
 
   function addEmployee() {
     inquirer.prompt([
@@ -158,22 +142,15 @@ function userMenu() {
   }
   
   // Function to view all departments
-function viewAllDepartments() {
-    return new Promise((res, req) => {
-        const sql = `
-            SELECT role.id, role.title, department.name AS department, role.salary
-            FROM role
-            INNER JOIN department ON role.department_id = department.id`;
-        db.query(sql, (err, results) => {
-            if (err) throw err;
-            console.table(results);
-        })
-    // Query the database for all departments and display them in a formatted table
-    res();
-    userMenu();
-    });
-    
-}
+  function viewAllDepartments() {
+    const sql = `SELECT * FROM department`;
+  
+    return db.promise().query(sql)
+      .then(([rows]) => {
+        console.table(rows);
+      })
+      .catch((err) => console.error(err));
+  }
   
   // Function to view all roles
   function viewAllRoles() {
@@ -350,6 +327,7 @@ function viewAllDepartments() {
   }
 
   module.exports = {
+    userMenu,
     viewAllDepartments,
     viewAllRoles,
     viewAllEmployees,
