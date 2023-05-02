@@ -1,172 +1,176 @@
 # Department-Organizer
 
-## Your Task
+## Description 
 
-Developers frequently have to create interfaces that allow non-developers to easily view and interact with information stored in databases. These interfaces are called **content management systems (CMS)**. Your assignment this week is to build a command-line application from scratch to manage a company's employee database, using Node.js, Inquirer, and MySQL.
-
-Because this application won’t be deployed, you’ll also need to create a walkthrough video that demonstrates its functionality and all of the following acceptance criteria being met. You’ll need to submit a link to the video and add it to the README of your project.
-
-## User Story
-
-```md
-AS A business owner
-I WANT to be able to view and manage the departments, roles, and employees in my company
-SO THAT I can organize and plan my business
-```
-
-## Acceptance Criteria
-
-```md
-GIVEN a command-line application that accepts user input
-WHEN I start the application
-THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
-WHEN I choose to view all departments
-THEN I am presented with a formatted table showing department names and department ids
-WHEN I choose to view all roles
-THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-WHEN I choose to view all employees
-THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-WHEN I choose to add a department
-THEN I am prompted to enter the name of the department and that department is added to the database
-WHEN I choose to add a role
-THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-WHEN I choose to add an employee
-THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-WHEN I choose to update an employee role
-THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
-```
+This is a Department Organizer, this is a tool for companies to organize their employee database with different departments and their respective roles and employees within them. Users will get prompted with questions using node.js that will allow users to choose from the user menu. Once they have selected an option they will be prompted using inquirer prompt or a SQL query based on the option chosen. Overall, this application will allow companies to keep track of their employees in an organized SQL database fashion.
 
 ## Mock-Up
 
-The following video shows an example of the application being used from the command line:
+### Here is a video link showing the usage of the application:
+[Department Organizer Demo](https://drive.google.com/file/d/1WZ8jvRN8YxQ_jqrn9lehCCIbXP2DIvzY/view?pli=1)
+
+### The following is an example output of the Department Organizer view all:
 
-[![A video thumbnail shows the command-line employee management application with a play button overlaying the view.](./Assets/12-sql-challenge-video-thumbnail.png)](https://2u-20.wistia.com/medias/2lnle7xnpk)
+![Terminal View All Output](./Assets/terminalviewallwithadd.png)
 
-## Getting Started
+## Table of Contents
 
-You’ll need to use the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to your MySQL database and perform queries, the [Inquirer package](https://www.npmjs.com/package/inquirer) to interact with the user via the command line, and the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
+* [Installation](#installation)
+* [Code Example](#code-example)
+* [Usage](#usage)
+* [Learning Points](#learning-points)
+* [Author Info](#author-info)
+* [Credits](#credits)
+* [License](#license)
 
-**Important**: You will be committing a file that contains your database credentials. Make sure that your MySQL password is not used for any other personal accounts, because it will be visible on GitHub. In upcoming lessons, you will learn how to better secure this password, or you can start researching npm packages now that could help you.
+## Installation
 
-You might also want to make your queries asynchronous. MySQL2 exposes a `.promise()` function on Connections to upgrade an existing non-Promise connection to use Promises. To learn more and make your queries asynchronous, refer to the [npm documentation on MySQL2](https://www.npmjs.com/package/mysql2).
+1. Clone down the repository or download all files within repository
+2. You will need to install node.js
+3. Open terminal within VS Code and type 'node server.js'
+4. Select from the user menu as you wish
+5. You might need to install these packages: inquirer, mysql2
 
-Design the database schema as shown in the following image:
+```
+npm i inquirer@8.2.4
 
-![Database schema includes tables labeled “employee,” role,” and “department.”](./Assets/12-sql-challenge-demo-01.png)
+npm i mysql2
+```
 
-As the image illustrates, your schema should contain the following three tables:
+## Code Example
 
-* `department`
+Here is an example of my addEmployee function that allows users to add a new employee with different inputs: First name, Last name, role ID, and if they have a manager ID or not.
 
-    * `id`: `INT PRIMARY KEY`
+addEmployee:
+```javascript
+const addEmployee = () => {
+  inquirer.prompt([
+      {
+        name: 'firstName',
+        type: 'input',
+        message: "What is the employee's first name?",
+      },
+      {
+        name: 'lastName',
+        type: 'input',
+        message: "What is the employee's last name?",
+      },
+      {
+        name: 'roleId',
+        type: 'input',
+        message: "What is the employee's role id?",
+      },
+      {
+        name: 'managerId',
+        type: 'input',
+        message: 'What is the manager Id?',
+      },
+    ])
+    .then(answer => {
+      db.query(
+        'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)',
+        [answer.firstName, answer.lastName, answer.roleId, answer.managerId],
+        function (err, res) {
+          if (err) throw err;
+          console.log('Employee added!');
+          userMenu();
+        }
+      );
+    });
+};
+```
 
-    * `name`: `VARCHAR(30)` to hold department name
+## Usage
 
-* `role`
+### Here is a video link showing the usage of the application:
+[Department Organizer Demo](https://drive.google.com/file/d/1WZ8jvRN8YxQ_jqrn9lehCCIbXP2DIvzY/view?pli=1)
 
-    * `id`: `INT PRIMARY KEY`
+### Here you can see how I access the terminal within VS Code:
 
-    * `title`: `VARCHAR(30)` to hold role title
+![Accessing terminal](./Assets/openterminal.png)
 
-    * `salary`: `DECIMAL` to hold role salary
+### Here you can see what I input into the terminal to initalize the application:
 
-    * `department_id`: `INT` to hold reference to department role belongs to
+![Terminal Input Screenshot](./Assets/terminalnode.png)
 
-* `employee`
+### Here you can see the user menu list the user can then choose from:
 
-    * `id`: `INT PRIMARY KEY`
+![Terminal Output Screenshot](./Assets/terminalmenu.png)
 
-    * `first_name`: `VARCHAR(30)` to hold employee first name
+### Here is an example of what can be an expected output from one of the options:
 
-    * `last_name`: `VARCHAR(30)` to hold employee last name
+![View All Screenshot](./Assets/terminalviewall.png)
 
-    * `role_id`: `INT` to hold reference to employee role
+### Here is an example of what adding an employee would look like:
 
-    * `manager_id`: `INT` to hold reference to another employee that is the manager of the current employee (`null` if the employee has no manager)
+![Add Screenshot](./Assets/terminaladd.png)
 
-You might want to use a separate file that contains functions for performing specific SQL queries you'll need to use. A constructor function or class could be helpful for organizing these. You might also want to include a `seeds.sql` file to pre-populate your database, making the development of individual features much easier.
+### Here you can see the output of view all Employees after an updated employee:
 
-## Bonus
+![View All with Add Screenshot](./Assets/terminalviewallwithadd.png)
 
-Try to add some additional functionality to your application, such as the ability to do the following:
+## Learning Points 
 
-* Update employee managers.
+This project taught me a lot and solidified my knowledge of node.js as well as using the inquirer package. It provided me with different use cases of mySQL within javascript functionalities and applications. I believe that after this project I now am knowledgeable within mySQL and using the mysql2 package within javascript in order to query right into javascript. There was not very many stopping points for me but definitely more to improve on in the future. I want more user prompted criteria so if users want to make adjustments to certain salaries, or specific searches of employees or roles they are able to do that as well.
 
-* View employees by manager.
+## About Me
 
-* View employees by department.
+Hi, my name is Bryan Nguyen I am an up and coming full-stack web developer working
+on getting into the space with projects that support both my growth, belief, and imagination. I hope to one day work within the realm of AI, web-development, and even site-reliability/cyber-security.
 
-* Delete departments, roles, and employees.
+## My links
 
-* View the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department.
+### * [Portfolio](https://bryannguyen9.github.io/Bryan-Nguyen-Portfolio/)
+### * [LinkedIn](https://linkedin.com/in/bryannguyen9)
+### * [Github](https://github.com/bryannguyen9)
 
-## Grading Requirements
 
-This challenge is graded based on the following criteria:
+## Credits
 
-### Deliverables: 10%
+### Special thanks to David Chung: 
+ 
+- [David Chung's Github](https://github.com/dchung13/)
+- [David Chung's LinkedIn](https://www.linkedin.com/in/david-chung-77141526b/)
+- [David Chung's Portfolio](https://dchung13.github.io/David-Chung-Portfolio/) 
 
-* Your GitHub repository containing your application code.
+### Special thanks to David Vo:
 
-### Walkthrough Video: 27%
+- [David Vo's Github](https://github.com/daevidvo)
+- [David Vo's LinkedIn](https://www.linkedin.com/in/daevidvo/)
 
-* A walkthrough video that demonstrates the functionality of the employee tracker must be submitted, and a link to the video should be included in your README file.
+### Special thanks to these reference websites that taught me different functionalities within my website for me to create a seamless experience for users.
 
-* The walkthrough video must show all of the technical acceptance criteria being met.
+1. [Stack Overflow](https://stackoverflow.com/questions/64220107/passing-sql-queries-into-inquirer-prompt)
+2. [NpmJS for mysql2](https://www.npmjs.com/package/mysql2)
+3. [NpmJS for inquirer](https://www.npmjs.com/package/inquirer)
 
-* The walkthrough video must demonstrate how a user would invoke the application from the command line.
+## License
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-* The walkthrough video must demonstrate a functional menu with the options outlined in the acceptance criteria.
+This project is licensed under the MIT License.
 
-### Technical Acceptance Criteria: 40%
+MIT License
 
-* Satisfies all of the preceding acceptance criteria plus the following:
+    Copyright (c) [2023] [Bryan Nguyen]
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 
-    * Uses the [Inquirer package](https://www.npmjs.com/package/inquirer).
+For further details on the MIT License you can click on this link: [Link to MIT License Details](https://opensource.org/license/mit/)
 
-    * Uses the [MySQL2 package](https://www.npmjs.com/package/mysql2) to connect to a MySQL database.
 
-    * Uses the [console.table package](https://www.npmjs.com/package/console.table) to print MySQL rows to the console.
-
-* Follows the table schema outlined in the challenge instructions.
-
-### Repository Quality: 13%
-
-* Repository has a unique name.
-
-* Repository follows best practices for file structure and naming conventions.
-
-* Repository follows best practices for class/id naming conventions, indentation, quality comments, etc.
-
-* Repository contains multiple descriptive commit messages.
-
-* Repository contains a high-quality README with description and a link to a walkthrough video.
-
-### Application Quality 10%
-
-* The application user experience is intuitive and easy to navigate.
-
-### Bonus
-
-Fulfilling any of the following can add up to 20 points to your grade. Note that the highest grade you can achieve is still 100:
-
-* Application allows users to update employee managers (2 points).
-
-* Application allows users to view employees by manager (2 points).
-
-* Application allows users to view employees by department (2 points).
-
-* Application allows users to delete departments, roles, and employees (2 points for each).
-
-* Application allows users to view the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department (8 points).
-
-## Review
-
-You are required to submit BOTH of the following for review:
-
-* A walkthrough video demonstrating the functionality of the application.
-
-* The URL of the GitHub repository, with a unique name and a README describing the project.
-
-- - -
-© 2023 edX Boot Camps LLC. Confidential and Proprietary. All Rights Reserved.

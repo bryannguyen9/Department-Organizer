@@ -25,6 +25,7 @@ const db = mysql.createConnection({
         {
           type: 'list',
           name: 'option',
+          loop: false,
           message: 'What would you like to do?',
           choices: [
             'View all departments',
@@ -51,19 +52,15 @@ const db = mysql.createConnection({
             break;
           case 'Add a department':
             addDepartment()
-              .then(() => console.log('Department added.'))
             break;
           case 'Add a role':
             addRole()
-              .then(() => console.log('Role added.'))
             break;
           case 'Add an employee':
             addEmployee()
-              .then(() => console.log('Employee added.'))
             break;
           case 'Update an employee role':
             updateEmployee()
-              .then(() => console.log('Employee role updated.'))
             break;
           case 'Exit': // Exit the loop and terminate the app
             console.log('Goodbye!');
@@ -104,20 +101,23 @@ const viewAllEmployees = () => {
   );
 };
 
-const addDepartment = () => {
+let addDepartment = () => {
   inquirer.prompt([
       {
         name: 'department',
         type: 'input',
         message: 'What is the department name?',
-      },
+      }
     ])
-    .then(answer => {
+    .then((answer) => {
+      console.log(answer);
       db.query(
         'INSERT INTO department (name) VALUES (?)',
         [answer.department],
         function (err, res) {
-          if (err) throw err;
+          if (err) {
+            throw err;
+          };
           console.log('Department added!');
           userMenu();
         }
